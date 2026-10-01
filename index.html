@@ -315,7 +315,7 @@ function renderSchemes(){
 }
 function renderPrices(list=prices){
  document.getElementById("priceList").innerHTML=list.map(p=>`
- <div class="price"><span class="badge">${p.market}</span><h3 style="margin-top:9px">${p.crop}</h3><div class="num">${p.price}</div><small>Demo value — verify current local price before decisions.</small></div>`).join("");
+ <div class="price"><span class="badge">${p.market}</span><h3 style="margin-top:9px">${p.crop}</h3><div class="num">${p.price}</div></div>`).join("");
 }
 function searchMarket(){
  const q=document.getElementById("marketSearch").value.toLowerCase().trim();
