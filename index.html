@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KrishiMitra - AI Farming Assistant</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,Arial,sans-serif;background:#f3f8f1;color:#17351d}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0}
+.app{min-height:100vh}
+header{background:linear-gradient(135deg,#14532d,#238b45);color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 3px 15px #0002}
+.logo{display:flex;align-items:center;gap:10px;font-size:24px;font-weight:800}
+.logo span{font-size:31px}
+.lang{background:#ffffff22;border:1px solid #ffffff55;color:white;padding:8px 12px;border-radius:10px}
+.container{max-width:1150px;margin:auto;padding:28px 18px}
+.hero{background:linear-gradient(120deg,#dff5df,#fff);border-radius:25px;padding:34px;display:flex;justify-content:space-between;gap:25px;align-items:center;margin-bottom:22px}
+.hero h1{font-size:38px;color:#14532d;margin-bottom:10px}
+.hero p{font-size:17px;color:#52705a;line-height:1.6}
+.hero-art{font-size:95px}
+.card{background:white;border-radius:20px;padding:24px;box-shadow:0 6px 25px #174d2012;border:1px solid #e4eee3;margin-bottom:20px}
+h2{color:#14532d;margin-bottom:16px}
+h3{margin-bottom:8px}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+input,select,textarea{width:100%;padding:13px 14px;border:1px solid #cbdcc9;border-radius:12px;outline:none;background:#fbfefb}
+input:focus,select:focus,textarea:focus{border-color:#2f9e52;box-shadow:0 0 0 3px #2f9e5218}
+.primary{background:#198754;color:white;padding:13px 20px;border-radius:12px;font-weight:700}
+.secondary{background:#e8f5e9;color:#17652d;padding:11px 17px;border-radius:11px;font-weight:700}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.tab{background:white;border:1px solid #d8e8d5;border-radius:14px;padding:16px;text-align:left;color:#205c2c;font-weight:700}
+.tab.active{background:#198754;color:white}
+.dashboard{display:none}
+.dashboard.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat{background:white;border-radius:18px;padding:18px;box-shadow:0 5px 18px #174d2010}
+.stat b{font-size:26px;color:#198754;display:block;margin-top:6px}
+.chat{height:310px;overflow-y:auto;background:#f5faf4;border-radius:15px;padding:15px;margin-bottom:13px}
+.msg{max-width:82%;padding:12px 15px;border-radius:15px;margin-bottom:10px;line-height:1.45}
+.bot{background:white;border:1px solid #dcebd9}
+.user{background:#198754;color:white;margin-left:auto}
+.chatrow{display:flex;gap:8px}
+.chatrow input{flex:1}
+.featuregrid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.feature{padding:20px;border-radius:17px;background:#f7fbf6;border:1px solid #dcebd9}
+.feature .icon{font-size:35px;margin-bottom:9px}
+.scheme{border:1px solid #dcebd9;padding:17px;border-radius:15px;margin-bottom:12px}
+.scheme strong{color:#146c2e}
+.pricegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.price{padding:18px;background:#f7fbf6;border-radius:15px;border:1px solid #dcebd9}
+.price .num{font-size:26px;font-weight:800;color:#198754;margin:7px 0}
+.upload{border:2px dashed #9bc6a0;padding:35px;text-align:center;border-radius:17px;background:#f7fcf7}
+#preview{max-width:230px;max-height:180px;border-radius:12px;margin:15px auto;display:none}
+.report{line-height:1.8}
+.badge{display:inline-block;background:#e3f5e6;color:#17652d;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:700}
+footer{text-align:center;color:#68816d;padding:25px}
+@media(max-width:750px){
+.hero{padding:25px}.hero h1{font-size:29px}.hero-art{font-size:65px}
+.formgrid,.stats,.featuregrid,.pricegrid,.tabs{grid-template-columns:1fr}
+.tabs{gap:7px}.container{padding:18px 12px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo"><span>🌾</span> KrishiMitra</div>
+  <select class="lang" id="language" onchange="changeLanguage()">
+    <option value="English">English</option><option value="Kannada">ಕನ್ನಡ</option><option value="Hindi">हिन्दी</option><option value="Telugu">తెలుగు</option>
+  </select>
+</header>
+
+<main class="container">
+<section id="welcome">
+  <div class="hero">
+    <div>
+      <h1>Smart farming starts here.</h1>
+      <p>AI-powered assistance for government schemes, market prices, crop health and everyday farming decisions.</p>
+    </div>
+    <div class="hero-art">👩‍🌾🌱</div>
+  </div>
+
+  <div class="card">
+    <h2>👨‍🌾 Farmer Profile</h2>
+    <div class="formgrid">
+      <input id="name" placeholder="Farmer name">
+      <input id="mobile" placeholder="Mobile number">
+      <input id="location" placeholder="Village / Location">
+      <input id="crop" placeholder="Main crop (e.g. Tomato)">
+    </div>
+    <button class="primary" style="margin-top:16px" onclick="startApp()">Start KrishiMitra →</button>
+  </div>
+
+  <div class="card">
+    <h2>What can KrishiMitra do?</h2>
+    <div class="featuregrid">
+      <div class="feature"><div class="icon">🤖</div><h3>AI Assistant</h3><p>Ask farming questions in simple language.</p></div>
+      <div class="feature"><div class="icon">🏛️</div><h3>Government Schemes</h3><p>Explore farmer support schemes.</p></div>
+      <div class="feature"><div class="icon">📈</div><h3>Market Prices</h3><p>Check demo mandi prices for crops.</p></div>
+      <div class="feature"><div class="icon">🌿</div><h3>Crop Health</h3><p>Upload a crop image for assistance.</p></div>
+      <div class="feature"><div class="icon">🎙️</div><h3>Voice Input</h3><p>Speak your question using the browser.</p></div>
+      <div class="feature"><div class="icon">📋</div><h3>Farmer Report</h3><p>Generate a simple consultation report.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="dashboard" class="dashboard">
+  <div class="card">
+    <h2 id="hello">Hello 👋</h2>
+    <p id="profileText"></p>
+  </div>
+
+  <div class="stats">
+    <div class="stat">🌾 Your Crop<b id="statCrop">-</b></div>
+    <div class="stat">📍 Location<b id="statLocation">-</b></div>
+    <div class="stat">🏛️ Schemes<b>6+</b></div>
+    <div class="stat">🤖 Assistant<b>Online</b></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('agent',this)">🤖 AI Agent</button>
+    <button class="tab" onclick="showTab('schemes',this)">🏛️ Schemes</button>
+    <button class="tab" onclick="showTab('market',this)">📈 Market</button>
+    <button class="tab" onclick="showTab('health',this)">🌿 Crop Health</button>
+  </div>
+
+  <div id="agent" class="tabcontent">
+    <div class="card">
+      <h2>🤖 KrishiMitra AI Agent</h2>
+      <div class="chat" id="chat">
+        <div class="msg bot" id="welcomeMsg">Namaste! 🌱 I am KrishiMitra. Ask me about schemes, crop prices, crop diseases or farming guidance.</div>
+      </div>
+      <div class="chatrow">
+        <input id="question" placeholder="Ask: What schemes are available for farmers?">
+        <button class="secondary" id="voiceBtn" onclick="startVoiceConversation()" title="Voice conversation">🎙️</button>
+        <button class="primary" onclick="askAgent()">Ask</button>
+      </div>
+      <div id="voiceStatus" style="margin-top:10px;color:#52705a;font-size:13px;text-align:center;">🎙️ Tap the microphone to speak with KrishiMitra</div>
+    </div>
+  </div>
+
+  <div id="schemes" class="tabcontent" style="display:none">
+    <div class="card">
+      <h2>🏛️ Farmer Government Schemes</h2>
+      <div id="schemeList"></div>
+    </div>
+  </div>
+
+  <div id="market" class="tabcontent" style="display:none">
+    <div class="card">
+      <h2>📈 Market Prices</h2>
+      <input id="marketSearch" placeholder="Search crop: tomato, onion, rice" oninput="searchMarket()">
+      <div class="pricegrid" id="priceList" style="margin-top:15px"></div>
+    </div>
+  </div>
+
+  <div id="health" class="tabcontent" style="display:none">
+    <div class="card">
+      <h2>🌿 Crop Health Assistant</h2>
+      <p style="margin-bottom:15px;color:#607564">Upload a clear crop or leaf image. This demo gives a simulated analysis for your presentation.</p>
+      <div class="upload">
+        <input type="file" id="cropImage" accept="image/*" onchange="previewImage()">
+        <img id="preview">
+        <br>
+        <button class="primary" onclick="analyzeCrop()">🔍 Analyze Crop</button>
+        <div id="analysis"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Final Consultation Report</h2>
+    <div id="report" class="report">
+      <p>Ask the AI agent first. Your consultation summary will appear here.</p>
+    </div>
+    <button class="secondary" onclick="generateReport()">Generate Report</button>
+  </div>
+</section>
+</main>
+
+<footer>KrishiMitra • AI-assisted farmer support demo • Built for student innovation</footer>
+</div>
+
+<script>
+let farmer={};
+let lastQuestion="";
+let lastAnswer="";
+const schemes=[
+ {name:"PM-KISAN",tag:"Income Support",text:"Financial assistance for eligible farmer families according to current government guidelines.",benefit:"Direct income support"},
+ {name:"Pradhan Mantri Fasal Bima Yojana",tag:"Crop Insurance",text:"Crop insurance support against specified risks and crop losses.",benefit:"Risk protection"},
+ {name:"Kisan Credit Card",tag:"Credit",text:"Credit facility designed to help farmers meet cultivation and related needs.",benefit:"Agricultural credit"},
+ {name:"Soil Health Card",tag:"Soil",text:"Provides soil testing information and nutrient recommendations.",benefit:"Better soil management"},
+ {name:"PM Krishi Sinchayee Yojana",tag:"Irrigation",text:"Supports improved irrigation and water-use efficiency.",benefit:"Water management"},
+ {name:"e-NAM",tag:"Market",text:"Electronic agricultural market platform connecting participating markets.",benefit:"Market access"}
+];
+const prices=[
+ {crop:"Tomato",price:"₹32/kg",market:"Bengaluru APMC"},
+ {crop:"Onion",price:"₹28/kg",market:"Yeshwanthpur APMC"},
+ {crop:"Rice",price:"₹48/kg",market:"Bengaluru APMC"},
+ {crop:"Potato",price:"₹26/kg",market:"Kolar Market"},
+ {crop:"Maize",price:"₹24/kg",market:"Doddaballapur Market"},
+ {crop:"Chilli",price:"₹86/kg",market:"Hubballi Market"}
+];
+
+function startApp(){
+ const name=document.getElementById("name").value.trim();
+ if(!name){alert("Please enter farmer name.");return}
+ farmer={
+  name,
+  mobile:document.getElementById("mobile").value,
+  location:document.getElementById("location").value || "Not provided",
+  crop:document.getElementById("crop").value || "Not provided",
+  language:document.getElementById("language").value
+ };
+ localStorage.setItem("krishimitra_farmer",JSON.stringify(farmer));
+ document.getElementById("welcome").style.display="none";
+ document.getElementById("dashboard").classList.add("active");
+ document.getElementById("hello").textContent="Hello, "+farmer.name+" 👋";
+ document.getElementById("profileText").textContent=`${farmer.crop} • ${farmer.location} • Language: ${farmer.language}`;
+ document.getElementById("statCrop").textContent=farmer.crop;
+ document.getElementById("statLocation").textContent=farmer.location;
+ renderSchemes(); renderPrices();
+}
+function showTab(id,btn){
+ document.querySelectorAll(".tabcontent").forEach(x=>x.style.display="none");
+ document.getElementById(id).style.display="block";
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+ btn.classList.add("active");
+}
+function addMsg(text,type){
+ const chat=document.getElementById("chat");
+ const div=document.createElement("div");
+ div.className="msg "+type;
+ div.textContent=text;
+ chat.appendChild(div);
+ chat.scrollTop=chat.scrollHeight;
+}
+const voiceLocales = {English:"en-IN", Kannada:"kn-IN", Hindi:"hi-IN", Telugu:"te-IN"};
+function speakText(text){
+ if(!("speechSynthesis" in window)) return;
+ window.speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(text); u.lang=voiceLocales[farmer.language]||"en-IN"; u.rate=.92;
+ const voices=window.speechSynthesis.getVoices();
+ const exact=voices.find(v=>v.lang.toLowerCase()===u.lang.toLowerCase());
+ const base=voices.find(v=>v.lang.toLowerCase().startsWith(u.lang.split("-")[0].toLowerCase()));
+ if(exact)u.voice=exact; else if(base)u.voice=base;
+ window.speechSynthesis.speak(u);
+}
+const replyText={
+ English:{
+  welcome:"Namaste! 🌱 I am KrishiMitra. Ask me about schemes, crop prices, crop diseases or farming guidance.",
+  schemes:"I can help with farmer schemes such as PM-KISAN, crop insurance, Kisan Credit Card, Soil Health Card, irrigation support and e-NAM. Open the Schemes tab to explore them.",
+  market:(found)=>found?`${found.crop} is shown at ${found.price} in this demo at ${found.market}. Market values should be verified with the latest official market source before making a decision.`:"Tell me the crop name, for example tomato, onion or rice, and I can show the demo market card.",
+  disease:"For crop-health help, open the Crop Health tab and upload a clear image of the affected leaf or plant. The current demo provides simulated analysis.",
+  weather:"Weather conditions can affect irrigation, spraying and harvesting. In a production version, this section can connect to a live weather API for the farmer's selected location.",
+  general:(crop)=>`For ${crop}, I can help with schemes, market prices, crop health and general farming guidance. Try asking “What schemes are available?”`
+ },
+ Kannada:{
+  welcome:"ನಮಸ್ಕಾರ! 🌱 ನಾನು ಕೃಷಿಮಿತ್ರ. ಯೋಜನೆಗಳು, ಬೆಳೆ ಬೆಲೆಗಳು, ಬೆಳೆ ರೋಗಗಳು ಅಥವಾ ಕೃಷಿ ಮಾರ್ಗದರ್ಶನದ ಬಗ್ಗೆ ಕೇಳಿ.",
+  schemes:"PM-KISAN, ಬೆಳೆ ವಿಮೆ, ಕಿಸಾನ್ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್, ಮಣ್ಣಿನ ಆರೋಗ್ಯ ಕಾರ್ಡ್, ನೀರಾವರಿ ಸಹಾಯ ಮತ್ತು e-NAM ಸೇರಿದಂತೆ ರೈತರ ಯೋಜನೆಗಳ ಬಗ್ಗೆ ನಾನು ಸಹಾಯ ಮಾಡಬಹುದು. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ Schemes ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ.",
+  market:(found)=>found?`${found.crop} ಬೆಳೆ ಈ ಡೆಮೊದಲ್ಲಿ ${found.market} ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ${found.price} ದರದಲ್ಲಿ ತೋರಿಸಲಾಗಿದೆ. ನಿರ್ಧಾರ ತೆಗೆದುಕೊಳ್ಳುವ ಮೊದಲು ಇತ್ತೀಚಿನ ಅಧಿಕೃತ ಮಾರುಕಟ್ಟೆ ಮೂಲದಿಂದ ಬೆಲೆಯನ್ನು ಪರಿಶೀಲಿಸಿ.`:"ಟೊಮ್ಯಾಟೊ, ಈರುಳ್ಳಿ ಅಥವಾ ಅಕ್ಕಿಯಂತಹ ಬೆಳೆಯ ಹೆಸರನ್ನು ಹೇಳಿ. ನಾನು ಡೆಮೊ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಯನ್ನು ತೋರಿಸುತ್ತೇನೆ.",
+  disease:"ಬೆಳೆ ಆರೋಗ್ಯದ ಸಹಾಯಕ್ಕಾಗಿ Crop Health ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ ಮತ್ತು ಸಮಸ್ಯೆಯಿರುವ ಎಲೆ ಅಥವಾ ಗಿಡದ ಸ್ಪಷ್ಟ ಚಿತ್ರವನ್ನು ಅಪ್ಲೋಡ್ ಮಾಡಿ. ಪ್ರಸ್ತುತ ಡೆಮೊ ಸಿಮ್ಯುಲೇಟೆಡ್ ವಿಶ್ಲೇಷಣೆಯನ್ನು ನೀಡುತ್ತದೆ.",
+  weather:"ಹವಾಮಾನ ಪರಿಸ್ಥಿತಿಗಳು ನೀರಾವರಿ, ಸಿಂಪಡಣೆ ಮತ್ತು ಕೊಯ್ಲಿನ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರಬಹುದು. ಉತ್ಪಾದನಾ ಆವೃತ್ತಿಯಲ್ಲಿ ರೈತರ ಸ್ಥಳಕ್ಕೆ ಲೈವ್ ಹವಾಮಾನ API ಅನ್ನು ಸಂಪರ್ಕಿಸಬಹುದು.",
+  general:(crop)=>`${crop} ಬೆಳೆಗಾಗಿ ಯೋಜನೆಗಳು, ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು, ಬೆಳೆ ಆರೋಗ್ಯ ಮತ್ತು ಸಾಮಾನ್ಯ ಕೃಷಿ ಮಾರ್ಗದರ್ಶನದಲ್ಲಿ ನಾನು ಸಹಾಯ ಮಾಡಬಹುದು. “ಯಾವ ಯೋಜನೆಗಳು ಲಭ್ಯವಿವೆ?” ಎಂದು ಕೇಳಿ.`
+ },
+ Hindi:{
+  welcome:"नमस्ते! 🌱 मैं कृषिमित्र हूँ। योजनाओं, फसल की कीमतों, फसल रोगों या खेती की जानकारी के बारे में पूछें।",
+  schemes:"मैं PM-KISAN, फसल बीमा, किसान क्रेडिट कार्ड, मृदा स्वास्थ्य कार्ड, सिंचाई सहायता और e-NAM जैसी किसान योजनाओं के बारे में मदद कर सकता हूँ। अधिक जानकारी के लिए Schemes टैब खोलें।",
+  market:(found)=>found?`${found.crop} की कीमत इस डेमो में ${found.market} में ${found.price} दिखाई गई है। निर्णय लेने से पहले नवीनतम आधिकारिक बाजार स्रोत से कीमत की पुष्टि करें।`:"फसल का नाम बताएं, जैसे टमाटर, प्याज या चावल। मैं डेमो बाजार कार्ड दिखा सकता हूँ।",
+  disease:"फसल स्वास्थ्य सहायता के लिए Crop Health टैब खोलें और प्रभावित पत्ती या पौधे की स्पष्ट तस्वीर अपलोड करें। वर्तमान डेमो एक सिम्युलेटेड विश्लेषण देता है।",
+  weather:"मौसम की स्थिति सिंचाई, छिड़काव और कटाई को प्रभावित कर सकती है। उत्पादन संस्करण में किसान के स्थान के लिए लाइव मौसम API जोड़ा जा सकता है।",
+  general:(crop)=>`${crop} के लिए मैं योजनाओं, बाजार कीमतों, फसल स्वास्थ्य और सामान्य खेती की जानकारी में मदद कर सकता हूँ। “कौन-सी योजनाएँ उपलब्ध हैं?” पूछें।`
+ },
+ Telugu:{
+  welcome:"నమస్కారం! 🌱 నేను కృషిమిత్రను. పథకాలు, పంట ధరలు, పంట వ్యాధులు లేదా వ్యవసాయ మార్గదర్శకం గురించి అడగండి.",
+  schemes:"PM-KISAN, పంట బీమా, కిసాన్ క్రెడిట్ కార్డ్, మట్టి ఆరోగ్య కార్డ్, సాగునీటి సహాయం మరియు e-NAM వంటి రైతు పథకాల గురించి నేను సహాయం చేయగలను. మరింత సమాచారం కోసం Schemes ట్యాబ్‌ను తెరవండి.",
+  market:(found)=>found?`${found.crop} ధర ఈ డెమోలో ${found.market}లో ${found.price}గా చూపబడుతోంది. నిర్ణయం తీసుకునే ముందు తాజా అధికారిక మార్కెట్ మూలం నుండి ధరను నిర్ధారించండి.`:"టమాటా, ఉల్లిపాయ లేదా బియ్యం వంటి పంట పేరును చెప్పండి. నేను డెమో మార్కెట్ కార్డును చూపగలను.",
+  disease:"పంట ఆరోగ్య సహాయం కోసం Crop Health ట్యాబ్‌ను తెరిచి, ప్రభావిత ఆకు లేదా మొక్క యొక్క స్పష్టమైన చిత్రాన్ని అప్‌లోడ్ చేయండి. ప్రస్తుత డెమో సిమ్యులేటెడ్ విశ్లేషణను అందిస్తుంది.",
+  weather:"వాతావరణ పరిస్థితులు సాగునీరు, పిచికారీ మరియు కోతపై ప్రభావం చూపవచ్చు. ప్రొడక్షన్ వెర్షన్‌లో రైతు ఎంచుకున్న ప్రదేశానికి లైవ్ వాతావరణ APIని కనెక్ట్ చేయవచ్చు.",
+  general:(crop)=>`${crop} కోసం పథకాలు, మార్కెట్ ధరలు, పంట ఆరోగ్యం మరియు సాధారణ వ్యవసాయ మార్గదర్శకంలో నేను సహాయం చేయగలను. “ఏ పథకాలు అందుబాటులో ఉన్నాయి?” అని అడగండి.`
+ }
+};
+function localizedReply(key,data){ const lang=farmer.language||"English"; const t=replyText[lang]||replyText.English; return typeof t[key]==="function"?t[key](data):t[key]; }
+function askAgent(speakReply=true){
+ const q=document.getElementById("question").value.trim(); if(!q)return;
+ lastQuestion=q; addMsg(q,"user"); document.getElementById("question").value="";
+ const l=q.toLowerCase(); let answer="";
+ if(l.includes("scheme")||l.includes("subsidy")||l.includes("government")||l.includes("loan")||l.includes("ಯೋಜನೆ")||l.includes("ಸಬ್ಸಿಡಿ")||l.includes("योजना")||l.includes("सब्सिडी")||l.includes("పథకం")||l.includes("సబ్సిడీ"))
+ answer=localizedReply("schemes");
+ else if(l.includes("price")||l.includes("market")||l.includes("rate")||l.includes("mandi")||l.includes("ಬೆಲೆ")||l.includes("ಮಾರುಕಟ್ಟೆ")||l.includes("कीमत")||l.includes("बाज़ार")||l.includes("ధర")||l.includes("మార్కెట్")){
+  const found=prices.find(p=>l.includes(p.crop.toLowerCase())); answer=localizedReply("market",found);
+ } else if(l.includes("disease")||l.includes("leaf")||l.includes("yellow")||l.includes("plant")||l.includes("ರೋಗ")||l.includes("ಎಲೆ")||l.includes("रोग")||l.includes("पत्ता")||l.includes("వ్యాధి")||l.includes("ఆకు"))
+ answer=localizedReply("disease");
+ else if(l.includes("weather")||l.includes("rain")||l.includes("ಹವಾಮಾನ")||l.includes("ಮಳೆ")||l.includes("मौसम")||l.includes("बारिश")||l.includes("వాతావరణం")||l.includes("వర్షం"))
+ answer=localizedReply("weather");
+ else answer=localizedReply("general",farmer.crop||"your crop");
+ lastAnswer=answer; setTimeout(()=>{addMsg(answer,"bot"); if(speakReply)speakText(answer)},350);
+}
+function startVoiceConversation(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){alert("Voice conversation is not supported in this browser. Please use Google Chrome or Microsoft Edge.");return;}
+ const status=document.getElementById("voiceStatus"),btn=document.getElementById("voiceBtn");
+ const lang=farmer.language||document.getElementById("language").value||"English";
+ const r=new SR(); r.lang=voiceLocales[lang]||"en-IN"; r.continuous=false; r.interimResults=false; r.maxAlternatives=1;
+ btn.textContent="🔴"; status.textContent=`🎙️ Listening in ${lang}... Speak now`;
+ r.onresult=e=>{const spoken=e.results[0][0].transcript; document.getElementById("question").value=spoken; status.textContent=`🗣️ You said: "${spoken}"`; askAgent(true)};
+ r.onerror=e=>{status.textContent=e.error==="not-allowed"?"⚠️ Allow microphone permission and try again.":"⚠️ Voice input stopped. Tap 🎙️ and try again."};
+ r.onend=()=>{btn.textContent="🎙️"}; r.start();
+}
+function voiceInput(){startVoiceConversation();}
+
+function renderSchemes(){
+ document.getElementById("schemeList").innerHTML=schemes.map(s=>`
+ <div class="scheme"><span class="badge">${s.tag}</span><h3 style="margin-top:8px">${s.name}</h3><p>${s.text}</p><p style="margin-top:7px"><b>Benefit:</b> ${s.benefit}</p></div>`).join("");
+}
+function renderPrices(list=prices){
+ document.getElementById("priceList").innerHTML=list.map(p=>`
+ <div class="price"><span class="badge">${p.market}</span><h3 style="margin-top:9px">${p.crop}</h3><div class="num">${p.price}</div><small>Demo value — verify current local price before decisions.</small></div>`).join("");
+}
+function searchMarket(){
+ const q=document.getElementById("marketSearch").value.toLowerCase().trim();
+ renderPrices(q?prices.filter(p=>p.crop.toLowerCase().includes(q)):prices);
+}
+function previewImage(){
+ const f=document.getElementById("cropImage").files[0];
+ const img=document.getElementById("preview");
+ if(!f)return;
+ img.src=URL.createObjectURL(f);img.style.display="block";
+ document.getElementById("analysis").innerHTML="";
+}
+function analyzeCrop(){
+ const f=document.getElementById("cropImage").files[0];
+ if(!f){alert("Please select a crop image first.");return}
+ const lang=farmer.language||"English";
+ const analysisText={
+  English:{badge:"Demo Analysis",title:"Possible leaf stress detected 🌿",body:"This is a simulated result for the prototype. In a production system, an image model would analyze the crop and provide confidence, disease name and recommended treatment.",next:"Suggested next step:",advice:"Consult a local agriculture expert before applying chemicals or treatment.",voice:"Crop health demo analysis completed. Possible leaf stress was detected. Verify with an agriculture expert."},
+  Kannada:{badge:"ಡೆಮೊ ವಿಶ್ಲೇಷಣೆ",title:"ಎಲೆಯಲ್ಲಿ ಒತ್ತಡ ಕಂಡುಬಂದಿದೆ 🌿",body:"ಇದು ಪ್ರೋಟೋಟೈಪ್‌ಗಾಗಿ ಸಿಮ್ಯುಲೇಟೆಡ್ ಫಲಿತಾಂಶವಾಗಿದೆ. ಉತ್ಪಾದನಾ ವ್ಯವಸ್ಥೆಯಲ್ಲಿ ಚಿತ್ರ ಮಾದರಿಯು ಬೆಳೆಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ ರೋಗದ ಹೆಸರು, ವಿಶ್ವಾಸಮಟ್ಟ ಮತ್ತು ಚಿಕಿತ್ಸೆಯ ಸಲಹೆಯನ್ನು ನೀಡುತ್ತದೆ.",next:"ಮುಂದಿನ ಸಲಹೆ:",advice:"ರಾಸಾಯನಿಕ ಅಥವಾ ಚಿಕಿತ್ಸೆಯನ್ನು ಬಳಸುವ ಮೊದಲು ಸ್ಥಳೀಯ ಕೃಷಿ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ.",voice:"ಬೆಳೆ ಆರೋಗ್ಯದ ಡೆಮೊ ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣಗೊಂಡಿದೆ. ಎಲೆಯಲ್ಲಿ ಸಂಭವನೀಯ ಒತ್ತಡ ಕಂಡುಬಂದಿದೆ. ಕೃಷಿ ತಜ್ಞರಿಂದ ಪರಿಶೀಲಿಸಿ."},
+  Hindi:{badge:"डेमो विश्लेषण",title:"पत्ती में संभावित तनाव पाया गया 🌿",body:"यह प्रोटोटाइप के लिए एक सिम्युलेटेड परिणाम है। उत्पादन प्रणाली में इमेज मॉडल फसल का विश्लेषण करके रोग का नाम, विश्वास स्तर और उपचार की सलाह देगा।",next:"अगला सुझाव:",advice:"रसायन या उपचार करने से पहले स्थानीय कृषि विशेषज्ञ से सलाह लें।",voice:"फसल स्वास्थ्य का डेमो विश्लेषण पूरा हुआ। पत्ती में संभावित तनाव पाया गया है। कृषि विशेषज्ञ से इसकी पुष्टि करें।"},
+  Telugu:{badge:"డెమో విశ్లేషణ",title:"ఆకులో ఒత్తిడి కనిపించింది 🌿",body:"ఇది ప్రోటోటైప్ కోసం సిమ్యులేటెడ్ ఫలితం. ప్రొడక్షన్ సిస్టమ్‌లో ఇమేజ్ మోడల్ పంటను విశ్లేషించి వ్యాధి పేరు, నమ్మక స్థాయి మరియు చికిత్స సూచనను అందిస్తుంది.",next:"తదుపరి సూచన:",advice:"రసాయనాలు లేదా చికిత్సను ఉపయోగించే ముందు స్థానిక వ్యవసాయ నిపుణుడిని సంప్రదించండి.",voice:"పంట ఆరోగ్య డెమో విశ్లేషణ పూర్తయింది. ఆకులో సంభావ్య ఒత్తిడి కనిపించింది. వ్యవసాయ నిపుణుడితో నిర్ధారించుకోండి."}
+ }[lang]||null;
+ const t=analysisText||{badge:"Demo Analysis",title:"Possible leaf stress detected 🌿",body:"This is a simulated result for the prototype.",next:"Suggested next step:",advice:"Consult a local agriculture expert before applying chemicals or treatment.",voice:"Crop health demo analysis completed. Possible leaf stress was detected. Verify with an agriculture expert."};
+ document.getElementById("analysis").innerHTML=`<div class="scheme" style="text-align:left;margin-top:18px"><span class="badge">${t.badge}</span><h3 style="margin-top:8px">${t.title}</h3><p>${t.body}</p><p style="margin-top:8px"><b>${t.next}</b> ${t.advice}</p></div>`;
+ lastAnswer=t.voice;
+ speakText(t.voice);
+}
+function generateReport(){
+ document.getElementById("report").innerHTML=`
+ <p><b>Farmer:</b> ${farmer.name}</p>
+ <p><b>Location:</b> ${farmer.location}</p>
+ <p><b>Crop:</b> ${farmer.crop}</p>
+ <p><b>Question:</b> ${lastQuestion||"No question asked yet"}</p>
+ <p><b>KrishiMitra recommendation:</b> ${lastAnswer||"Start by asking the AI assistant a farming question."}</p>
+ <p><b>Generated:</b> ${new Date().toLocaleString()}</p>`;
+}
+function voiceInput(){
+ const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SpeechRecognition){alert("Voice input is not supported in this browser. Try Chrome or Edge.");return}
+ const recognition=new SpeechRecognition();
+ recognition.lang="en-IN";
+ recognition.start();
+ recognition.onresult=e=>{document.getElementById("question").value=e.results[0][0].transcript};
+}
+function changeLanguage(){
+ const selected=document.getElementById("language").value;
+ farmer.language=selected;
+ if(farmer.name){ localStorage.setItem("krishimitra_farmer",JSON.stringify(farmer)); document.getElementById("profileText").textContent=`${farmer.crop} • ${farmer.location} • Language: ${farmer.language}`; }
+ const s=document.getElementById("voiceStatus"); if(s)s.textContent=`🎙️ Tap the microphone to speak in ${selected}`;
+ const w=document.getElementById("welcomeMsg"); if(w)w.textContent=localizedReply("welcome");
+}
+window.onload=()=>{
+ const saved=localStorage.getItem("krishimitra_farmer");
+ if(saved){
+   try{
+    farmer=JSON.parse(saved);
+    document.getElementById("name").value=farmer.name||"";
+    document.getElementById("mobile").value=farmer.mobile||"";
+    document.getElementById("location").value=farmer.location||"";
+    document.getElementById("crop").value=farmer.crop||"";
+   }catch(e){}
+ }
+};
+</script>
+</body>
+</html>
